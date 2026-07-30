@@ -29,6 +29,12 @@
             <i class="fas fa-envelope mr-3"></i>
             <span>Contact</span>
           </a>
+          <!-- new nav link added in Tutorial 02, points to the books listing route -->
+          <!-- fixed: href was "/main-point", now "/books" to match the renamed route -->
+          <a href="/books" class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-700 transition duration-200">
+            <i class="fas fa-book mr-3"></i>
+            <span>Books</span>
+          </a>
         </nav>
       </div>
       <div class="w-full p-6 border-t border-gray-700 mt-auto">
@@ -50,7 +56,10 @@
         <div class="px-6 py-4 flex items-center justify-between">
           <div>
             <h1 class="text-2xl font-bold text-gray-800">
-              <%= viewData.title %>
+              <!-- guard added in Tutorial 02: some views (e.g. books) don't pass viewData -->
+              <% if (typeof viewData !== 'undefined') { %>
+                <%= viewData.title %>
+              <% } %>
             </h1>
           </div>
           <div class="flex items-center space-x-4">
