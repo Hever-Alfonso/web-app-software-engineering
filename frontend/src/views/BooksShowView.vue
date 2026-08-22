@@ -2,6 +2,10 @@
 // Get the book from the service layer instead of importing the raw data
 import { BookService } from '@/services/BookService.js';
 import { useRoute } from 'vue-router';
+// Component that shows and lets the user add reviews for this book
+import BookReviews from '@/components/BookReviews.vue';
+// Shared price formatting function, now used by both book views
+import { formatToCOP } from '@/utils/formatCurrency.js';
 
 const route = useRoute();
 // Convert the route param (string) to a number to match book.id
@@ -53,7 +57,7 @@ const book = BookService.getBookById(bookId);
                 </div>
                 <div class="flex justify-between">
                   <span class="text-gray-600">Price:</span>
-                  <span class="font-medium">${{ book.price }}</span>
+                  <span class="font-medium">${{ formatToCOP(book.price) }} COP</span>
                 </div>
                 <div class="flex justify-between">
                   <span class="text-gray-600">Stock:</span>
@@ -62,6 +66,10 @@ const book = BookService.getBookById(bookId);
                   </span>
                 </div>
               </div>
+            </div>
+            <!-- Reviews section: shows and lets the user add reviews for this book -->
+            <div class="bg-white rounded-lg shadow-md p-6 mt-8">
+              <BookReviews :book-id="book.id" />
             </div>
           </div>
         </div>

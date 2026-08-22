@@ -1,6 +1,7 @@
 import { createPinia } from 'pinia';
 import { watch } from 'vue';
 import { bookSeeder } from '@/stores/bookseeder.js';
+import { reviewSeeder } from '@/stores/reviewseeder.js';
 
 // Sets up Pinia and syncs its state with LocalStorage
 export default class PiniaConfig {
@@ -16,6 +17,9 @@ export default class PiniaConfig {
       pinia.state.value = {
         book: {
           books: bookSeeder,
+        },
+        review: {
+          reviews: reviewSeeder,
         },
       };
       // save the initial state to localStorage
