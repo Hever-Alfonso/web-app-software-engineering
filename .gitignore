@@ -11,3 +11,8 @@ dist/
 # on the Windows machine where this .gitignore was originally created.
 # https://docs.github.com/en/get-started/git-basics/ignoring-files
 .DS_Store
+
+# Local SQLite database and TypeScript build cache, both generated at
+# runtime and not part of the source code.
+*.sqlite
+*.tsbuildinfo
