@@ -1,7 +1,7 @@
 import { createPinia } from 'pinia';
 import { watch } from 'vue';
 
-// Sets up Pinia and syncs its state with LocalStorage
+// Sets up Pinia (LocalStorage sync is disabled below)
 export default class PiniaConfig {
   public static init() {
     const pinia = createPinia();
