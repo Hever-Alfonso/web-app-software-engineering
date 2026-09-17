@@ -1,22 +1,19 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { ReviewService } from '@/services/ReviewService.js';
-
-// Highest and lowest rating a review can have
-const MAX_RATING = 5;
-const MIN_RATING = 1;
+import type { ReviewInterface } from '@/interfaces/ReviewInterface.js';
 
 // This component receives the id of the book whose reviews it should show
 const props = defineProps<{
   bookId: number;
 }>();
 
-// Recalculates automatically whenever bookId changes
-const reviews = computed(() => ReviewService.getReviewsByBookId(props.bookId));
+// Reactive list of reviews, empty until the API responds
+const reviews = ref<ReviewInterface[]>([]);
 
 // Holds the values of the "add review" form
 const form = ref({
-  rating: MAX_RATING,
+  rating: 5,
   comment: '',
   author: '',
 });
@@ -24,18 +21,19 @@ const form = ref({
 // Tracks whether a review is currently being submitted
 const isSubmitting = ref(false);
 
-// Validates and sends the new review to the service, then resets the form
-function submitReview() {
+// Validates and sends the new review to the backend, then resets the form and reloads the list
+async function submitReview() {
   if (!form.value.comment.trim()) return;
   isSubmitting.value = true;
-  ReviewService.createReview({
+  await ReviewService.createReview({
     bookId: props.bookId,
-    rating: Math.min(MAX_RATING, Math.max(MIN_RATING, form.value.rating)),
+    rating: Math.min(5, Math.max(1, form.value.rating)),
     comment: form.value.comment.trim(),
     author: form.value.author.trim() || undefined,
   });
-  form.value = { rating: MAX_RATING, comment: '', author: '' };
+  form.value = { rating: 5, comment: '', author: '' };
   isSubmitting.value = false;
+  getReviews();
 }
 
 // Formats an ISO date string into a short readable date
@@ -47,6 +45,16 @@ function formatDate(iso?: string): string {
     day: 'numeric',
   });
 }
+
+// Requests the reviews of this book from the backend
+async function getReviews() {
+  reviews.value = await ReviewService.getReviewsByBookId(props.bookId);
+}
+
+// Load the reviews when the component is mounted
+onMounted(() => {
+  getReviews();
+});
 </script>
 
 <template>
@@ -65,7 +73,7 @@ function formatDate(iso?: string): string {
             class="w-full border border-gray-300 rounded py-2 px-3 focus:outline-none focus:ring focus:border-blue-300"
             required
           >
-            <option v-for="n in MAX_RATING" :key="n" :value="n">{{ n }} star{{ n > 1 ? 's' : '' }}</option>
+            <option v-for="n in 5" :key="n" :value="n">{{ n }} star{{ n > 1 ? 's' : '' }}</option>
           </select>
         </div>
         <div>
@@ -108,9 +116,9 @@ function formatDate(iso?: string): string {
       >
         <div class="flex items-center justify-between gap-2 mb-2">
           <span class="font-medium text-gray-800">{{ review.author || 'Anonymous' }}</span>
-          <!-- Filled stars for the rating, empty stars for the rest, out of MAX_RATING -->
+          <!-- Filled stars for the rating, empty stars for the rest, out of 5 -->
           <span class="text-amber-500 text-sm" :title="`${review.rating} stars`">
-            {{ '★'.repeat(review.rating) }}{{ '☆'.repeat(MAX_RATING - review.rating) }}
+            {{ '★'.repeat(review.rating) }}{{ '☆'.repeat(5 - review.rating) }}
           </span>
         </div>
         <p class="text-gray-600 text-sm whitespace-pre-wrap">{{ review.comment }}</p>

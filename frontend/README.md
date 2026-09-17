@@ -1,8 +1,9 @@
 # Frontend App
 
 SPA/CSR project built with Vue.js, Vite, and TypeScript, developed step
-by step as Tutorials 03, 04, and 05 of the Web Application Software
-Engineering course.
+by step as Tutorials 03, 04, 05, and 07 of the Web Application Software
+Engineering course. Since Tutorial 07 it gets its data from the Nest.js
+backend (`../backend`).
 
 ---
 
@@ -13,6 +14,7 @@ Engineering course.
 - TypeScript
 - Vue Router
 - Pinia
+- Axios
 - Tailwind CSS 4
 - Prettier
 - ESLint + oxlint
@@ -37,26 +39,20 @@ frontend/
 │   ├── router/
 │   │   └── index.ts               # route definitions
 │   ├── services/
-│   │   ├── BookService.ts         # service layer for book data access
-│   │   ├── CategoryService.ts     # unique book categories, used by the filter
-│   │   └── ReviewService.ts       # service layer for review data access
-│   ├── stores/
-│   │   ├── bookstore.ts           # Pinia store holding the books state
-│   │   ├── bookseeder.ts          # initial book data used on first load
-│   │   ├── reviewstore.ts         # Pinia store holding the reviews state
-│   │   └── reviewseeder.ts        # initial review data used on first load
+│   │   ├── BookService.ts         # calls the backend /api/books routes with Axios
+│   │   └── ReviewService.ts       # calls the backend /api/reviews routes with Axios
 │   ├── utils/
 │   │   └── formatCurrency.ts      # formats a price as Colombian pesos
 │   ├── views/
 │   │   ├── HomeView.vue
 │   │   ├── AboutView.vue
 │   │   ├── ContactView.vue
-│   │   ├── BooksIndexView.vue     # books list, create/delete last book, category filter
+│   │   ├── BooksIndexView.vue     # books list loaded from the backend
 │   │   ├── BooksShowView.vue      # single book detail, with its reviews
-│   │   └── BooksCreateView.vue    # book creation form
+│   │   └── BooksCreateView.vue    # book creation form, saves to the backend
 │   ├── App.vue                    # root component (sidebar + header layout)
 │   ├── main.ts                    # app entry point
-│   └── PiniaConfig.ts             # sets up Pinia and syncs it with LocalStorage
+│   └── PiniaConfig.ts             # creates Pinia (LocalStorage sync disabled)
 ├── index.html
 ├── package.json
 ├── vite.config.ts
@@ -72,7 +68,7 @@ frontend/
 | `/` | Home page |
 | `/about` | "About" page |
 | `/contact` | "Contact" page |
-| `/books` | Books list, with buttons to add or delete the last book, and a category filter |
+| `/books` | Books list, with a button to add a book |
 | `/books/create` | Book creation form |
 | `/books/:id` | Single book detail, with formatted price and reviews |
 
@@ -80,30 +76,28 @@ frontend/
 
 ## Features
 
-- **Formatted price**: prices are shown in Colombian pesos, with no
-  decimals, using the `formatToCOP` function in
-  `utils/formatCurrency.ts`.
-- **Category filter**: on the books list, a dropdown lets the user
-  filter books by category, using `CategoryService`.
+- **Backend data**: books and reviews are read and created through the
+  REST API, using `BookService` and `ReviewService` (Axios).
+- **Formatted price**: on the book detail page, prices are shown in
+  Colombian pesos, with no decimals, using the `formatToCOP` function
+  in `utils/formatCurrency.ts`. The books list shows the price as it
+  comes from the backend.
 - **Reviews**: each book has its own reviews section (view and add),
   with a star rating, comment, and optional author, handled by the
-  `BookReviews.vue` component and `ReviewService`.
+  `BookReviews.vue` component.
 
 ---
 
 ## Data persistence
 
-Book and review data live in Pinia stores (`stores/bookstore.ts` and
-`stores/reviewstore.ts`) synced with the browser's LocalStorage, under
-the key `piniaState`. On first load the stores are filled with
-`bookseeder.ts` and `reviewseeder.ts`; after that, any change (create
-or delete a book, add a review) is saved automatically and persists
-across page reloads. This is local to each browser, there is no
-backend involved.
+All data is stored in the backend's SQLite database. The frontend no
+longer uses Pinia stores or LocalStorage for books and reviews: in
+Tutorial 07 the stores, seeders, and the category service were removed,
+and the LocalStorage sync in `PiniaConfig.ts` was commented out.
 
-If something breaks after changing the data shape, manually delete the
-`piniaState` key in the browser's LocalStorage and restart the dev
-server.
+The previous "Delete Last Book" button (Tutorial 04) and category filter
+(Tutorial 05) were removed when the books list was replaced in
+Tutorial 07.
 
 ---
 
@@ -113,6 +107,13 @@ Install dependencies:
 
 ```bash
 npm install
+```
+
+Start the backend first (in another terminal):
+
+```bash
+cd ../backend
+npm run start:dev
 ```
 
 Run the dev server:
@@ -126,6 +127,9 @@ Open in the browser:
 ```text
 http://localhost:5173
 ```
+
+The backend must be running at http://localhost:3000, otherwise the
+books and reviews will not load.
 
 ---
 

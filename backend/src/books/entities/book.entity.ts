@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Review } from './review.entity.js';
 
 // Entity mapped to the "book" table in the database
 @Entity()
@@ -22,4 +23,8 @@ export class Book {
 
   @Column()
   stock: number;
+
+  // One book has many reviews (inverse side of Review.book)
+  @OneToMany(() => Review, (review) => review.book)
+  reviews: Review[];
 }

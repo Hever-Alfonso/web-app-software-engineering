@@ -10,7 +10,7 @@ const price = ref(0);
 const stock = ref(0);
 const successMessage = ref('');
 
-function submitForm() {
+async function submitForm() {
   // Build the DTO from the current form values
   const newBook: CreateBookDTO = {
     title: title.value,
@@ -18,13 +18,19 @@ function submitForm() {
     price: price.value,
     stock: stock.value,
   };
-  BookService.createBook(newBook);
-  successMessage.value = 'Book created successfully!';
-  // Reset the form after creating
-  title.value = '';
-  category.value = '';
-  price.value = 0;
-  stock.value = 0;
+  try {
+    // Send the book to the backend and wait for the response
+    await BookService.createBook(newBook);
+    successMessage.value = 'Book created successfully!';
+    // Reset the form after creating
+    title.value = '';
+    category.value = '';
+    price.value = 0;
+    stock.value = 0;
+  } catch (error) {
+    // Log the error if the request fails
+    console.error(error);
+  }
 }
 </script>
 

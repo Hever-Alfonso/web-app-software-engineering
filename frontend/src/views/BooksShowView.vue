@@ -1,16 +1,24 @@
 <script setup lang="ts">
-// Get the book from the service layer instead of importing the raw data
+// Get the book from the service layer, which now calls the backend API
 import { BookService } from '@/services/BookService.js';
 import { useRoute } from 'vue-router';
+import type { BookInterface } from '@/interfaces/BookInterface.js';
+import { onMounted, ref } from 'vue';
 // Component that shows and lets the user add reviews for this book
 import BookReviews from '@/components/BookReviews.vue';
 // Shared price formatting function, now used by both book views
 import { formatToCOP } from '@/utils/formatCurrency.js';
 
-const route = useRoute();
-// Convert the route param (string) to a number to match book.id
-const bookId = Number(route.params.id);
-const book = BookService.getBookById(bookId);
+// Reactive book, null until the API responds
+const book = ref<BookInterface | null>(null);
+
+// Load the book from the backend when the view is mounted
+onMounted(async () => {
+  const route = useRoute();
+  // Convert the route param (string) to a number to match book.id
+  const bookId = Number(route.params.id);
+  book.value = await BookService.getBookById(bookId);
+});
 </script>
 
 <template>

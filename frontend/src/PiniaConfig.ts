@@ -1,13 +1,12 @@
 import { createPinia } from 'pinia';
 import { watch } from 'vue';
-import { bookSeeder } from '@/stores/bookseeder.js';
-import { reviewSeeder } from '@/stores/reviewseeder.js';
 
 // Sets up Pinia and syncs its state with LocalStorage
 export default class PiniaConfig {
   public static init() {
     const pinia = createPinia();
-    const savedState = localStorage.getItem('piniaState');
+    // LocalStorage sync disabled: data now comes from the backend API
+    /*const savedState = localStorage.getItem('piniaState');
 
     if (savedState) {
       // Load the previously saved state
@@ -33,7 +32,7 @@ export default class PiniaConfig {
         localStorage.setItem('piniaState', JSON.stringify(state));
       },
       { deep: true },
-    );
+    );*/
 
     return pinia;
   }
