@@ -1,9 +1,10 @@
 # Frontend App
 
 SPA/CSR project built with Vue.js, Vite, and TypeScript, developed step
-by step as Tutorials 03, 04, 05, and 07 of the Web Application Software
-Engineering course. Since Tutorial 07 it gets its data from the Nest.js
-backend (`../backend`).
+by step as Tutorials 03, 04, 05, 07, and 08 of the Web Application
+Software Engineering course. Since Tutorial 07 it gets its data from the
+Nest.js backend (`../backend`), and since Tutorial 08 it is deployed with
+Docker and nginx on a Google Cloud virtual machine.
 
 ---
 
@@ -18,6 +19,7 @@ backend (`../backend`).
 - Tailwind CSS 4
 - Prettier
 - ESLint + oxlint
+- Docker + nginx (deployment)
 
 ---
 
@@ -25,6 +27,7 @@ backend (`../backend`).
 
 ```text
 frontend/
+├── dist/                          # production build, versioned for Docker
 ├── public/
 │   └── favicon.ico
 ├── src/
@@ -53,6 +56,10 @@ frontend/
 │   ├── App.vue                    # root component (sidebar + header layout)
 │   ├── main.ts                    # app entry point
 │   └── PiniaConfig.ts             # creates Pinia (LocalStorage sync disabled)
+├── .env                           # backend URL (VITE_API_BASE_URL), not versioned
+├── .dockerignore                  # files left out of the Docker image
+├── Dockerfile                     # nginx image that serves dist/
+├── nginx.conf                     # nginx config with the SPA fallback
 ├── index.html
 ├── package.json
 ├── vite.config.ts
@@ -77,7 +84,8 @@ frontend/
 ## Features
 
 - **Backend data**: books and reviews are read and created through the
-  REST API, using `BookService` and `ReviewService` (Axios).
+  REST API, using `BookService` and `ReviewService` (Axios). The backend
+  URL comes from `VITE_API_BASE_URL` in `.env`.
 - **Formatted price**: on the book detail page, prices are shown in
   Colombian pesos, with no decimals, using the `formatToCOP` function
   in `utils/formatCurrency.ts`. The books list shows the price as it
@@ -109,6 +117,13 @@ Install dependencies:
 npm install
 ```
 
+Create `.env` in `frontend/` with the backend URL. The file is not
+versioned, so it is missing after cloning:
+
+```text
+VITE_API_BASE_URL=http://localhost:3000
+```
+
 Start the backend first (in another terminal):
 
 ```bash
@@ -128,8 +143,52 @@ Open in the browser:
 http://localhost:5173
 ```
 
-The backend must be running at http://localhost:3000, otherwise the
-books and reviews will not load.
+The backend must be running at the URL set in `VITE_API_BASE_URL`,
+otherwise the books and reviews will not load. Vite reads `.env` when the
+dev server starts or when the project is built, so restart it after
+changing that file.
+
+---
+
+## Deployment (Tutorial 08)
+
+The frontend and the backend run on a Google Cloud VM (Debian 13, with
+Docker and Docker Compose) through `docker-compose.yml` in the repository
+root: nginx serves the frontend on port 80 and the backend listens on
+port 3000.
+
+1. Set the VM external IP in `.env`:
+
+   ```text
+   VITE_API_BASE_URL=http://<VM_EXTERNAL_IP>:3000
+   ```
+
+2. Build both projects. The Docker images copy these pre-built `dist/`
+   folders, so both are versioned:
+
+   ```bash
+   npm run build
+   cd ../backend
+   npm run build
+   ```
+
+3. In `docker-compose.yml`, `CORS_ORIGIN` must include
+   `http://<VM_EXTERNAL_IP>`.
+4. Commit and push the changes, including both `dist/` folders.
+5. In the VM firewall, allow TCP port 3000 (rule `allow-3000`, from
+   `0.0.0.0/0`). Port 80 is already open with "Allow HTTP traffic".
+6. On the VM, clone the repository and start the containers:
+
+   ```bash
+   git clone https://github.com/Hever-Alfonso/web-app-software-engineering.git
+   cd web-app-software-engineering
+   sudo docker compose up -d
+   ```
+
+7. Open `http://<VM_EXTERNAL_IP>` in the browser (HTTP, not HTTPS).
+
+At the end of Tutorial 08 the app was deployed on the VM `fullstack`, at
+http://34.172.175.226.
 
 ---
 
