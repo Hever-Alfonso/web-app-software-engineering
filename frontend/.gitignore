@@ -9,7 +9,7 @@ lerna-debug.log*
 
 node_modules
 .DS_Store
-dist
+# dist is no longer ignored: the Dockerfile copies the pre-built dist folder
 dist-ssr
 coverage
 *.local

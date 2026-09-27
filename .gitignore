@@ -1,5 +1,5 @@
 node_modules/
-dist/
+# dist/ is no longer ignored: the Dockerfiles copy the pre-built dist folders
 **/src/public/css/style.css
 **/src/**/*.js
 **/src/**/*.js.map
