@@ -3,8 +3,8 @@ import axios from 'axios';
 
 // Service layer that gets review data from the backend API
 export class ReviewService {
-  // Base URL of the reviews endpoint in the backend
-  private static readonly API_URL = 'http://localhost:3000/api/reviews';
+  // Base URL of the reviews endpoint, built from VITE_API_BASE_URL in .env
+  private static readonly API_URL = `${import.meta.env.VITE_API_BASE_URL}/api/reviews`;
 
   // Request the full list of reviews
   static async getReviews(): Promise<ReviewInterface[]> {

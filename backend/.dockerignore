@@ -1,0 +1,14 @@
+# Dependencies are installed inside the image
+node_modules
+# Test coverage reports
+coverage
+# Git data and config
+.git
+.gitignore
+# Documentation files
+*.md
+# Test folder
+test
+# Local environment variables
+.env
+.env.*

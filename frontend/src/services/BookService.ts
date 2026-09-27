@@ -4,8 +4,8 @@ import axios from 'axios';
 
 // Service layer that gets book data from the backend API
 export class BookService {
-  // Base URL of the books endpoint in the backend
-  private static readonly API_URL = 'http://localhost:3000/api/books';
+  // Base URL of the books endpoint, built from VITE_API_BASE_URL in .env
+  private static readonly API_URL = `${import.meta.env.VITE_API_BASE_URL}/api/books`;
 
   // Request the full list of books
   public static async getBooks(): Promise<BookInterface[]> {

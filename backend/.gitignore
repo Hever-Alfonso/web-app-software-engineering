@@ -1,5 +1,5 @@
 # compiled output
-/dist
+# /dist is no longer ignored: the Dockerfile copies the pre-built dist folder
 /node_modules
 /build
 

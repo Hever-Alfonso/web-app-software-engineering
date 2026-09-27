@@ -1,0 +1,30 @@
+services:
+  # Nest.js API built from ./backend
+  backend:
+    build:
+      context: ./backend
+    # Expose the API on port 3000 of the VM
+    ports:
+      - "3000:3000"
+    # Values read by main.ts and app.module.ts
+    environment:
+      PORT: 3000
+      SQLITE_PATH: /data/database.sqlite
+      CORS_ORIGIN: "http://34.172.175.226,http://127.0.0.1:8080,http://localhost,http://127.0.0.1,http://localhost:5173"
+    # Keep the SQLite file in a named volume so data survives restarts
+    volumes:
+      - backend-data:/data
+  # Vue app served by nginx, built from ./frontend
+  frontend:
+    build:
+      context: ./frontend
+    # Expose the web app on port 80 of the VM
+    ports:
+      - "80:80"
+    # Start the backend before the frontend
+    depends_on:
+      - backend
+
+# Named volume that stores the backend database
+volumes:
+  backend-data:

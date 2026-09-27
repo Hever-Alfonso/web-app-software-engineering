@@ -9,7 +9,8 @@ import { BooksModule } from './books/books.module.js';
     // Database connection: local SQLite file handled by TypeORM
     TypeOrmModule.forRoot({
       type: 'better-sqlite3',
-      database: 'database.sqlite',
+      // SQLite file path from the environment, or the local default
+      database: process.env.SQLITE_PATH ?? 'database.sqlite',
       autoLoadEntities: true,
       synchronize: true,
     }),

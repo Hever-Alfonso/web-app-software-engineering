@@ -1,0 +1,7 @@
+# Dependencies are not needed: the image only serves the built dist
+node_modules
+# Git data and config
+.git
+.gitignore
+# Documentation files
+*.md
